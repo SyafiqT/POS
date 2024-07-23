@@ -18,22 +18,18 @@ class KategoriController extends Controller
      */
     public function behaviors()
     {
-        return array_merge(
-            parent::behaviors(),
-            [
-                'verbs' => [
-                    'class' => VerbFilter::className(),
-                    'actions' => [
-                        'delete' => ['POST'],
-                    ],
+        return [
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
                 ],
-            ]
-        );
+            ],
+        ];
     }
 
     /**
      * Lists all Kategori models.
-     *
      * @return string
      */
     public function actionIndex()
@@ -125,7 +121,7 @@ class KategoriController extends Controller
      */
     protected function findModel($idKategori)
     {
-        if (($model = Kategori::findOne(['idKategori' => $idKategori])) !== null) {
+        if (($model = Kategori::findOne($idKategori)) !== null) {
             return $model;
         }
 

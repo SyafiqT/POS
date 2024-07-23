@@ -17,7 +17,11 @@ use app\models\Produk;
     <?php $form = ActiveForm::begin(); ?>
 
     <?= $form->field($model, 'tanggal')->textInput(['readonly' => true, 'id' => 'transaction-date']) ?>
+    <?= $form->field($model, 'kode_transaksi')->textInput(['readonly' => true]) ?>
     <?= $form->field($model, 'total')->textInput(['readonly' => true, 'id' => 'transaction-total']) ?>
+    
+    <?= $form->field($model, 'uang_diberikan')->textInput(['id' => 'uang-diberikan']) ?>
+    <?= $form->field($model, 'uang_kembalian')->textInput(['readonly' => true, 'id' => 'uang-kembalian']) ?>
 
     <div class="panel panel-default">
         <div class="panel-heading"><h4><i class="glyphicon glyphicon-envelope"></i> Transaksi Details</h4></div>
@@ -92,6 +96,11 @@ function updateTotal() {
         total += parseFloat($(this).val());
     });
     $('#transaction-total').val(total.toFixed(2));
+    
+    // Update uang kembalian
+    var uangDiberikan = parseFloat($('#uang-diberikan').val()) || 0;
+    var uangKembalian = uangDiberikan - total;
+    $('#uang-kembalian').val(uangKembalian.toFixed(2));
 }
 
 $(document).on('click', '.add-product', function () {
@@ -134,6 +143,10 @@ $(document).on('change', '.product-id', function () {
 
 $(document).on('change', '.quantity', function () {
     updateRowTotal($(this).closest('tr'));
+});
+
+$(document).on('input', '#uang-diberikan', function() {
+    updateTotal();
 });
 
 function updateDateTime() {

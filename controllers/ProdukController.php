@@ -1,13 +1,17 @@
 <?php
 
+// controllers/ProdukController.php
+
 namespace app\controllers;
 
 use Yii;
 use app\models\Produk;
 use app\models\ProdukSearch;
+use app\models\Kategori;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\UploadedFile;
 use yii\web\Response;
 
 /**
@@ -46,24 +50,46 @@ class ProdukController extends Controller
     }
 
     public function actionCreate()
-    {
-        $model = new Produk();
+{
+    $model = new Produk();
+    $kategoriList = Kategori::find()->select(['NamaKategori', 'idKategori'])->indexBy('idKategori')->column();
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
+    if ($model->load($this->request->post())) {
+        Yii::info('Memanggil generateKodeBarang', __METHOD__);
+        $model->generateKodeBarang();
+        Yii::info('Kode Barang yang dihasilkan: ' . $model->kode_barang, __METHOD__);
+        $model->imageFile = UploadedFile::getInstance($model, 'imageFile');
+        
+        if ($model->save()) {
+            if ($model->imageFile) {
+                $model->upload();
+            }
             return $this->redirect(['view', 'idProduk' => $model->idProduk]);
+        } else {
+            Yii::error('Gagal menyimpan produk: ' . json_encode($model->errors), __METHOD__);
         }
-
-        return $this->render('create', [
-            'model' => $model,
-        ]);
     }
+
+    return $this->render('create', [
+        'model' => $model,
+        'kategoriList' => $kategoriList,
+    ]);
+}
+
+
 
     public function actionUpdate($idProduk)
     {
         $model = $this->findModel($idProduk);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'idProduk' => $model->idProduk]);
+        if ($model->load($this->request->post())) {
+            $model->imageFile = UploadedFile::getInstance($model, 'imageFile');
+            if ($model->save()) {
+                if ($model->imageFile) {
+                    $model->upload();
+                }
+                return $this->redirect(['view', 'idProduk' => $model->idProduk]);
+            }
         }
 
         return $this->render('update', [
@@ -86,6 +112,8 @@ class ProdukController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+
+
 
     public function actionGetHarga($idProduk)
     {

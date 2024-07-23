@@ -1,5 +1,7 @@
 <?php
 
+// views/produk/_form.php
+
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -10,7 +12,7 @@ use yii\widgets\ActiveForm;
 
 <div class="produk-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]); ?>
 
     <?= $form->field($model, 'nama')->textInput(['maxlength' => true]) ?>
 
@@ -22,6 +24,8 @@ use yii\widgets\ActiveForm;
         \yii\helpers\ArrayHelper::map(\app\models\Kategori::find()->all(), 'idKategori', 'NamaKategori'),
         ['prompt' => 'Select Kategori']
     ) ?>
+
+    <?= $form->field($model, 'imageFile')->fileInput() ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

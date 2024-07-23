@@ -18,6 +18,7 @@ class KategoriSearch extends Kategori
     {
         return [
             [['idKategori'], 'integer'],
+            [['kode_kategori'], 'safe'],
             [['NamaKategori'], 'safe'],
         ];
     }
@@ -61,6 +62,7 @@ class KategoriSearch extends Kategori
             'idKategori' => $this->idKategori,
         ]);
 
+        $query->andFilterWhere(['like', 'kode_kategori', $this->kode_kategori]);
         $query->andFilterWhere(['like', 'NamaKategori', $this->NamaKategori]);
 
         return $dataProvider;

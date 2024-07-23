@@ -1,5 +1,7 @@
 <?php
 
+// views/produk/index.php
+
 use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -26,6 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
 
             'idProduk',
+            'kode_barang',
             'nama',
             'harga',
             'stok',
@@ -35,6 +38,14 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $model->kategori ? $model->kategori->NamaKategori : 'Not set';
                 },
                 'label' => 'Kategori',
+            ],
+            [
+                'attribute' => 'gambar_barang',
+                'format' => 'html',
+                'value' => function ($model) {
+                    return Html::img(Yii::getAlias('@web/') . $model->gambar_barang, ['width' => '100px']);
+                },
+                'label' => 'Gambar',
             ],
 
             [

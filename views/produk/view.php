@@ -1,5 +1,7 @@
 <?php
 
+// views/produk/view.php
+
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
@@ -7,7 +9,7 @@ use yii\widgets\DetailView;
 /** @var app\models\Produk $model */
 
 $this->title = $model->idProduk;
-$this->params['breadcrumbs'][] = ['label' => 'Produks', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Produk', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
@@ -30,10 +32,23 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'idProduk',
+            'kode_barang',
             'nama',
             'harga',
-            'idKategori',
             'stok',
+            [
+                'attribute' => 'idKategori',
+                'value' => function ($model) {
+                    return $model->kategori ? $model->kategori->NamaKategori : 'Not set';
+                },
+            ],
+            [
+                'attribute' => 'gambar_barang',
+                'format' => 'html',
+                'value' => function ($model) {
+                    return Html::img(Yii::getAlias('@web/') . $model->gambar_barang, ['width' => '100px']);
+                },
+            ],
         ],
     ]) ?>
 

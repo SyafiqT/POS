@@ -5,10 +5,10 @@ use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 use app\models\Produk;
 
-/* @var $this yii\web\View */
-/* @var $model app\models\Transaksi */
-/* @var $form yii\widgets\ActiveForm */
-/* @var $details app\models\TransaksiDetail[] */
+/** @var yii\web\View $this */
+/** @var app\models\Transaksi $model */
+/** @var app\models\TransaksiDetail[] $details */
+/** @var yii\widgets\ActiveForm $form */
 
 ?>
 
@@ -18,6 +18,10 @@ use app\models\Produk;
 
     <?= $form->field($model, 'tanggal')->textInput(['readonly' => true, 'id' => 'transaction-date']) ?>
     <?= $form->field($model, 'total')->textInput(['readonly' => true, 'id' => 'transaction-total']) ?>
+    <!-- Remove kode_transaksi field from form -->
+    <!-- <?= $form->field($model, 'kode_transaksi')->textInput(['readonly' => true]) ?> -->
+    <?= $form->field($model, 'uang_diberikan')->textInput(['id' => 'amount-given']) ?>
+    <?= $form->field($model, 'uang_kembalian')->textInput(['readonly' => true, 'id' => 'change']) ?>
 
     <div class="panel panel-default">
         <div class="panel-heading"><h4><i class="glyphicon glyphicon-envelope"></i> Transaksi Details</h4></div>
@@ -33,7 +37,27 @@ use app\models\Produk;
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Product rows will be appended here by JavaScript -->
+                    <?php foreach ($details as $i => $detail): ?>
+                        <tr>
+                            <td>
+                                <select class="form-control product-id" name="TransaksiDetail[<?= $i ?>][idProduk]">
+                                    <?= Html::renderSelectOptions($detail->idProduk, ArrayHelper::map(Produk::find()->all(), 'idProduk', 'nama')) ?>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="number" class="form-control quantity" name="TransaksiDetail[<?= $i ?>][jumlah]" value="<?= $detail->jumlah ?>" min="1" />
+                            </td>
+                            <td>
+                                <input type="number" class="form-control price" name="TransaksiDetail[<?= $i ?>][harga]" value="<?= $detail->harga ?>" step="0.01" readonly />
+                            </td>
+                            <td>
+                                <input type="number" class="form-control row-total" value="<?= $detail->jumlah * $detail->harga ?>" step="0.01" readonly />
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger remove-product">Remove</button>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
@@ -43,7 +67,7 @@ use app\models\Produk;
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
-        <?= Html::a('Kembali', ['index'], ['class' => 'btn btn-default']) ?>
+        <?= Html::a('Back', ['index'], ['class' => 'btn btn-default']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
@@ -72,6 +96,14 @@ function updateTotal() {
         total += parseFloat($(this).val());
     });
     $('#transaction-total').val(total.toFixed(2));
+    calculateChange();
+}
+
+function calculateChange() {
+    var total = parseFloat($('#transaction-total').val()) || 0;
+    var amountGiven = parseFloat($('#amount-given').val()) || 0;
+    var change = amountGiven - total;
+    $('#change').val(change.toFixed(2));
 }
 
 $(document).on('click', '.add-product', function () {
@@ -116,6 +148,10 @@ $(document).on('change', '.quantity', function () {
     updateRowTotal($(this).closest('tr'));
 });
 
+$(document).on('change', '#amount-given', function () {
+    calculateChange();
+});
+
 function updateDateTime() {
     var now = new Date();
     var formattedDate = now.getFullYear() + '-' +
@@ -141,7 +177,7 @@ $('form').on('beforeSubmit', function() {
         });
     });
     $('#transaction-details-json').val(JSON.stringify(details));
-    return true;
+    return true; // Ensure the form can be submitted
 });
 JS
 );

@@ -17,6 +17,8 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'idKategori') ?>
 
+    <?= $form->field($model, 'kode_kategori') ?>
+
     <?= $form->field($model, 'NamaKategori') ?>
 
     <div class="form-group">

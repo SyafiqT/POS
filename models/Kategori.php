@@ -15,8 +15,8 @@ class Kategori extends ActiveRecord
     public function rules()
     {
         return [
-            [['NamaKategori'], 'required'],
-            [['NamaKategori'], 'string', 'max' => 255],
+            [['NamaKategori', 'kode_kategori'], 'required'],
+            [['NamaKategori', 'kode_kategori'], 'string', 'max' => 255],
         ];
     }
 
@@ -25,6 +25,7 @@ class Kategori extends ActiveRecord
         return [
             'idKategori' => 'ID Kategori',
             'NamaKategori' => 'Nama Kategori',
+            'kode_kategori' => 'Kode Kategori',
         ];
     }
 }
